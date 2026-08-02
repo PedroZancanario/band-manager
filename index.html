@@ -1,1 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Band Magener</title>
+</head>
+<body>
+  <header>
+    <h1>Band Magener</h1>
+    <img src="assets/images/logo.png" alt="Logo Band Magener">
+  </header>
 
+  <main>
+    <section>
+      <h2>Adicionar banda</h2>
+      <form id="band-form">
+        <label for="band-name">Nome da banda</label>
+        <input type="text" id="band-name" name="name" required>
+
+        <label for="band-genre">Gênero</label>
+        <input type="text" id="band-genre" name="genre">
+
+        <label for="band-image">Imagem</label>
+        <input type="url" id="band-image" name="image">
+
+        <button type="submit">Adicionar</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Buscar bandas</h2>
+      <input type="search" id="search-input" placeholder="Pesquisar banda..." aria-label="Pesquisar bandas">
+    </section>
+
+    <section>
+      <h2>Bandas</h2>
+      <div id="cards-container"></div>
+    </section>
+  </main>
+</body>
+</html>
