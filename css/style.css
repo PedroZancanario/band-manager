@@ -102,6 +102,18 @@ body {
   color: var(--text-muted);
 }
 
+.band-form input.invalid,
+.band-form select.invalid {
+  border-color: var(--danger);
+}
+
+.error-message {
+  grid-column: 1 / -1;
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 /* Botões */
 .btn {
   font-family: inherit;

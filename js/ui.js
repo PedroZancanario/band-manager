@@ -1,3 +1,32 @@
+const errorFieldIds = {
+  name: "band-name",
+  genre: "band-genre",
+  foundedYear: "band-year",
+  city: "band-city",
+  status: "band-status"
+};
+
+function showErrors(errors) {
+  for (const field in errors) {
+    const input = document.getElementById(errorFieldIds[field]);
+    const message = document.createElement("p");
+    message.classList.add("error-message");
+    message.textContent = errors[field];
+    input.classList.add("invalid");
+    input.after(message);
+  }
+}
+
+function clearErrors() {
+  document.querySelectorAll(".error-message").forEach(function (message) {
+    message.remove();
+  });
+
+  document.querySelectorAll(".invalid").forEach(function (input) {
+    input.classList.remove("invalid");
+  });
+}
+
 function renderBands(bands) {
   const container = document.getElementById("cards-container");
   container.innerHTML = "";

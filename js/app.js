@@ -14,30 +14,70 @@ const cancelButton = document.getElementById("cancel-button");
 
 let editingBandId = null;
 
+function validateBand(data) {
+  const errors = {};
+
+  if (data.name.trim() === "") {
+    errors.name = "Band name is required.";
+  }
+
+  if (data.genre.trim() === "") {
+    errors.genre = "Genre is required.";
+  }
+
+  if (data.city.trim() === "") {
+    errors.city = "City is required.";
+  }
+
+  const year = Number(data.foundedYear);
+  if (data.foundedYear.trim() === "" || Number.isNaN(year)) {
+    errors.foundedYear = "Founded year must be a valid year.";
+  } else if (year < 1900 || year > 2100) {
+    errors.foundedYear = "Founded year must be between 1900 and 2100.";
+  }
+
+  if (data.status !== "ativa" && data.status !== "inativa") {
+    errors.status = "Status must be selected.";
+  }
+
+  return errors;
+}
+
 function resetForm() {
   editingBandId = null;
   bandForm.reset();
   submitButton.textContent = "Adicionar";
   cancelButton.hidden = true;
+  clearErrors();
 }
 
 bandForm.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  const name = document.getElementById("band-name").value;
-  const genre = document.getElementById("band-genre").value;
-  const foundedYear = document.getElementById("band-year").value;
-  const city = document.getElementById("band-city").value;
-  const status = document.getElementById("band-status").value;
+  const data = {
+    name: document.getElementById("band-name").value,
+    genre: document.getElementById("band-genre").value,
+    foundedYear: document.getElementById("band-year").value,
+    city: document.getElementById("band-city").value,
+    status: document.getElementById("band-status").value
+  };
+
+  const errors = validateBand(data);
+
+  if (Object.keys(errors).length > 0) {
+    clearErrors();
+    showErrors(errors);
+    return;
+  }
 
   if (editingBandId === null) {
     const band = {
       id: Date.now(),
-      name: name,
-      genre: genre,
-      foundedYear: foundedYear,
-      city: city,
-      status: status
+      name: data.name.trim(),
+      genre: data.genre.trim(),
+      foundedYear: data.foundedYear.trim(),
+      city: data.city.trim(),
+      status: data.status
     };
 
     bands.push(band);
@@ -46,11 +86,11 @@ bandForm.addEventListener("submit", function (event) {
       return item.id === editingBandId;
     });
 
-    band.name = name;
-    band.genre = genre;
-    band.foundedYear = foundedYear;
-    band.city = city;
-    band.status = status;
+    band.name = data.name.trim();
+    band.genre = data.genre.trim();
+    band.foundedYear = data.foundedYear.trim();
+    band.city = data.city.trim();
+    band.status = data.status;
   }
 
   saveBands(bands);
