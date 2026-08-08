@@ -1,8 +1,25 @@
 const bands = loadBands();
 
+bands.forEach(function (band, index) {
+  if (band.id === undefined) {
+    band.id = Date.now() + index;
+  }
+});
+
 renderBands(bands);
 
 const bandForm = document.getElementById("band-form");
+const submitButton = document.getElementById("submit-button");
+const cancelButton = document.getElementById("cancel-button");
+
+let editingBandId = null;
+
+function resetForm() {
+  editingBandId = null;
+  bandForm.reset();
+  submitButton.textContent = "Adicionar";
+  cancelButton.hidden = true;
+}
 
 bandForm.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -13,22 +30,65 @@ bandForm.addEventListener("submit", function (event) {
   const city = document.getElementById("band-city").value;
   const status = document.getElementById("band-status").value;
 
-  const band = {
-    name: name,
-    genre: genre,
-    foundedYear: foundedYear,
-    city: city,
-    status: status
-  };
+  if (editingBandId === null) {
+    const band = {
+      id: Date.now(),
+      name: name,
+      genre: genre,
+      foundedYear: foundedYear,
+      city: city,
+      status: status
+    };
 
-  bands.push(band);
+    bands.push(band);
+  } else {
+    const band = bands.find(function (item) {
+      return item.id === editingBandId;
+    });
+
+    band.name = name;
+    band.genre = genre;
+    band.foundedYear = foundedYear;
+    band.city = city;
+    band.status = status;
+  }
 
   saveBands(bands);
 
   renderBands(bands);
 
-  bandForm.reset();
+  resetForm();
 });
+
+const cardsContainer = document.getElementById("cards-container");
+
+cardsContainer.addEventListener("click", function (event) {
+  const editButton = event.target.closest(".btn-edit");
+  if (!editButton) return;
+
+  const card = editButton.closest(".card");
+  const bandId = Number(card.dataset.id);
+
+  const band = bands.find(function (item) {
+    return item.id === bandId;
+  });
+  if (!band) return;
+
+  editingBandId = band.id;
+
+  document.getElementById("band-name").value = band.name;
+  document.getElementById("band-genre").value = band.genre;
+  document.getElementById("band-year").value = band.foundedYear;
+  document.getElementById("band-city").value = band.city;
+  document.getElementById("band-status").value = band.status;
+
+  submitButton.textContent = "Salvar alterações";
+  cancelButton.hidden = false;
+
+  bandForm.scrollIntoView({ behavior: "smooth" });
+});
+
+cancelButton.addEventListener("click", resetForm);
 
 const searchInput = document.getElementById("search-input");
 

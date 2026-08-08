@@ -13,6 +13,7 @@ function renderBands(bands) {
   for (const band of bands) {
     const card = document.createElement("article");
     card.classList.add("card");
+    card.dataset.id = band.id;
 
     const name = document.createElement("h3");
     name.classList.add("card-name");
