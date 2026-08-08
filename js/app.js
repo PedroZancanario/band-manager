@@ -1,4 +1,6 @@
-const bands = [];
+const bands = loadBands();
+
+renderBands(bands);
 
 const bandForm = document.getElementById("band-form");
 
@@ -20,6 +22,8 @@ bandForm.addEventListener("submit", function (event) {
   };
 
   bands.push(band);
+
+  saveBands(bands);
 
   renderBands(bands);
 
