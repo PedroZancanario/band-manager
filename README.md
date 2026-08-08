@@ -1,6 +1,10 @@
-# Band Manager
+# Band Manager  
 
 A web application for managing music bands. Users can register, search, edit, and delete bands while keeping their data saved in the browser.
+
+## Live Demo
+
+[View Band Manager](https://pedrozancanario.github.io/band-manager/)
 
 ## Features
 
