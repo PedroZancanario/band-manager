@@ -114,6 +114,13 @@ body {
   font-weight: 500;
 }
 
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
 /* Botões */
 .btn {
   font-family: inherit;
@@ -247,6 +254,10 @@ body {
   }
 
   .card-actions {
+    flex-direction: column;
+  }
+
+  .form-actions {
     flex-direction: column;
   }
 

@@ -6,13 +6,33 @@ bands.forEach(function (band, index) {
   }
 });
 
-renderBands(bands);
-
 const bandForm = document.getElementById("band-form");
 const submitButton = document.getElementById("submit-button");
 const cancelButton = document.getElementById("cancel-button");
+const cardsContainer = document.getElementById("cards-container");
+const searchInput = document.getElementById("search-input");
 
 let editingBandId = null;
+
+renderBands(bands);
+
+function getFormData() {
+  return {
+    name: document.getElementById("band-name").value,
+    genre: document.getElementById("band-genre").value,
+    foundedYear: document.getElementById("band-year").value,
+    city: document.getElementById("band-city").value,
+    status: document.getElementById("band-status").value
+  };
+}
+
+function fillForm(band) {
+  document.getElementById("band-name").value = band.name;
+  document.getElementById("band-genre").value = band.genre;
+  document.getElementById("band-year").value = band.foundedYear;
+  document.getElementById("band-city").value = band.city;
+  document.getElementById("band-status").value = band.status;
+}
 
 function validateBand(data) {
   const errors = {};
@@ -43,33 +63,7 @@ function validateBand(data) {
   return errors;
 }
 
-function resetForm() {
-  editingBandId = null;
-  bandForm.reset();
-  submitButton.textContent = "Adicionar";
-  cancelButton.hidden = true;
-  clearErrors();
-}
-
-bandForm.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  const data = {
-    name: document.getElementById("band-name").value,
-    genre: document.getElementById("band-genre").value,
-    foundedYear: document.getElementById("band-year").value,
-    city: document.getElementById("band-city").value,
-    status: document.getElementById("band-status").value
-  };
-
-  const errors = validateBand(data);
-
-  if (Object.keys(errors).length > 0) {
-    clearErrors();
-    showErrors(errors);
-    return;
-  }
-
+function saveBand(data) {
   if (editingBandId === null) {
     const band = {
       id: Date.now(),
@@ -81,59 +75,43 @@ bandForm.addEventListener("submit", function (event) {
     };
 
     bands.push(band);
-  } else {
-    const band = bands.find(function (item) {
-      return item.id === editingBandId;
-    });
-
-    band.name = data.name.trim();
-    band.genre = data.genre.trim();
-    band.foundedYear = data.foundedYear.trim();
-    band.city = data.city.trim();
-    band.status = data.status;
-  }
-
-  saveBands(bands);
-
-  renderBands(bands);
-
-  resetForm();
-});
-
-const cardsContainer = document.getElementById("cards-container");
-
-cardsContainer.addEventListener("click", function (event) {
-  const editButton = event.target.closest(".btn-edit");
-  if (editButton) {
-    const card = editButton.closest(".card");
-    const bandId = Number(card.dataset.id);
-
-    const band = bands.find(function (item) {
-      return item.id === bandId;
-    });
-    if (!band) return;
-
-    editingBandId = band.id;
-
-    document.getElementById("band-name").value = band.name;
-    document.getElementById("band-genre").value = band.genre;
-    document.getElementById("band-year").value = band.foundedYear;
-    document.getElementById("band-city").value = band.city;
-    document.getElementById("band-status").value = band.status;
-
-    submitButton.textContent = "Salvar alterações";
-    cancelButton.hidden = false;
-
-    bandForm.scrollIntoView({ behavior: "smooth" });
     return;
   }
 
-  const deleteButton = event.target.closest(".btn-delete");
-  if (!deleteButton) return;
+  const band = bands.find(function (item) {
+    return item.id === editingBandId;
+  });
 
-  const card = deleteButton.closest(".card");
-  const bandId = Number(card.dataset.id);
+  band.name = data.name.trim();
+  band.genre = data.genre.trim();
+  band.foundedYear = data.foundedYear.trim();
+  band.city = data.city.trim();
+  band.status = data.status;
+}
 
+function resetForm() {
+  editingBandId = null;
+  bandForm.reset();
+  submitButton.textContent = "Adicionar";
+  cancelButton.hidden = true;
+  clearErrors();
+}
+
+function startEditBand(bandId) {
+  const band = bands.find(function (item) {
+    return item.id === bandId;
+  });
+  if (!band) return;
+
+  editingBandId = band.id;
+  fillForm(band);
+  submitButton.textContent = "Salvar alterações";
+  cancelButton.hidden = false;
+
+  bandForm.scrollIntoView({ behavior: "smooth" });
+}
+
+function deleteBand(bandId) {
   const confirmed = confirm("Tem certeza que deseja excluir esta banda?");
   if (!confirmed) return;
 
@@ -146,25 +124,55 @@ cardsContainer.addEventListener("click", function (event) {
   }
 
   saveBands(bands);
-
   renderBands(bands);
-});
+}
 
-cancelButton.addEventListener("click", resetForm);
+function renderSearch() {
+  const searchTerm = searchInput.value.trim().toLowerCase();
 
-const searchInput = document.getElementById("search-input");
-
-searchInput.addEventListener("input", function () {
-  const term = searchInput.value.trim().toLowerCase();
-
-  if (term === "") {
+  if (searchTerm === "") {
     renderBands(bands);
     return;
   }
 
   const filteredBands = bands.filter(function (band) {
-    return band.name.toLowerCase().includes(term);
+    return band.name.toLowerCase().includes(searchTerm);
   });
 
   renderBands(filteredBands);
+}
+
+bandForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const data = getFormData();
+  const errors = validateBand(data);
+
+  if (Object.keys(errors).length > 0) {
+    clearErrors();
+    showErrors(errors);
+    return;
+  }
+
+  saveBand(data);
+  saveBands(bands);
+  renderBands(bands);
+  resetForm();
 });
+
+cardsContainer.addEventListener("click", function (event) {
+  const editButton = event.target.closest(".btn-edit");
+  if (editButton) {
+    startEditBand(Number(editButton.closest(".card").dataset.id));
+    return;
+  }
+
+  const deleteButton = event.target.closest(".btn-delete");
+  if (deleteButton) {
+    deleteBand(Number(deleteButton.closest(".card").dataset.id));
+  }
+});
+
+cancelButton.addEventListener("click", resetForm);
+
+searchInput.addEventListener("input", renderSearch);
