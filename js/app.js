@@ -29,3 +29,20 @@ bandForm.addEventListener("submit", function (event) {
 
   bandForm.reset();
 });
+
+const searchInput = document.getElementById("search-input");
+
+searchInput.addEventListener("input", function () {
+  const term = searchInput.value.trim().toLowerCase();
+
+  if (term === "") {
+    renderBands(bands);
+    return;
+  }
+
+  const filteredBands = bands.filter(function (band) {
+    return band.name.toLowerCase().includes(term);
+  });
+
+  renderBands(filteredBands);
+});

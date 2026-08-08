@@ -2,6 +2,14 @@ function renderBands(bands) {
   const container = document.getElementById("cards-container");
   container.innerHTML = "";
 
+  if (bands.length === 0) {
+    const emptyMessage = document.createElement("p");
+    emptyMessage.classList.add("empty-message");
+    emptyMessage.textContent = "No bands found.";
+    container.appendChild(emptyMessage);
+    return;
+  }
+
   for (const band of bands) {
     const card = document.createElement("article");
     card.classList.add("card");
