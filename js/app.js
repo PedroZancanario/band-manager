@@ -1,4 +1,4 @@
-const bands = loadBands();
+let bands = loadBands();
 
 bands.forEach(function (band, index) {
   if (band.id === undefined) {
@@ -64,28 +64,50 @@ const cardsContainer = document.getElementById("cards-container");
 
 cardsContainer.addEventListener("click", function (event) {
   const editButton = event.target.closest(".btn-edit");
-  if (!editButton) return;
+  if (editButton) {
+    const card = editButton.closest(".card");
+    const bandId = Number(card.dataset.id);
 
-  const card = editButton.closest(".card");
+    const band = bands.find(function (item) {
+      return item.id === bandId;
+    });
+    if (!band) return;
+
+    editingBandId = band.id;
+
+    document.getElementById("band-name").value = band.name;
+    document.getElementById("band-genre").value = band.genre;
+    document.getElementById("band-year").value = band.foundedYear;
+    document.getElementById("band-city").value = band.city;
+    document.getElementById("band-status").value = band.status;
+
+    submitButton.textContent = "Salvar alterações";
+    cancelButton.hidden = false;
+
+    bandForm.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+
+  const deleteButton = event.target.closest(".btn-delete");
+  if (!deleteButton) return;
+
+  const card = deleteButton.closest(".card");
   const bandId = Number(card.dataset.id);
 
-  const band = bands.find(function (item) {
-    return item.id === bandId;
+  const confirmed = confirm("Tem certeza que deseja excluir esta banda?");
+  if (!confirmed) return;
+
+  bands = bands.filter(function (item) {
+    return item.id !== bandId;
   });
-  if (!band) return;
 
-  editingBandId = band.id;
+  if (editingBandId === bandId) {
+    resetForm();
+  }
 
-  document.getElementById("band-name").value = band.name;
-  document.getElementById("band-genre").value = band.genre;
-  document.getElementById("band-year").value = band.foundedYear;
-  document.getElementById("band-city").value = band.city;
-  document.getElementById("band-status").value = band.status;
+  saveBands(bands);
 
-  submitButton.textContent = "Salvar alterações";
-  cancelButton.hidden = false;
-
-  bandForm.scrollIntoView({ behavior: "smooth" });
+  renderBands(bands);
 });
 
 cancelButton.addEventListener("click", resetForm);
